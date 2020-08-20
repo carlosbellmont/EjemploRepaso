@@ -8,6 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,10 +19,12 @@ import kotlinx.coroutines.withContext
 class MainActivity : AppCompatActivity() {
 
     private lateinit var model : MainActivityViewModel
+    private val adapter = PreguntaAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        createRvListaPreguntas()
         model = ViewModelProvider(this).get(MainActivityViewModel::class.java)
         setupObserver()
         setupAlertDialog()
@@ -29,7 +32,7 @@ class MainActivity : AppCompatActivity() {
 
     fun setupObserver() {
         val preguntasObserver = Observer<List<Pregunta>> { listaPreguntas ->
-            setupTvPreguntas(listaPreguntas)
+            updateRvListaPreguntas(listaPreguntas)
         }
         CoroutineScope(Dispatchers.IO).launch{
             val lista = model.loadPreguntas(this@MainActivity)
@@ -39,9 +42,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun setupTvPreguntas(listaPreguntas: List<Pregunta>) {
-        tvPreguntas.text = ""
-        listaPreguntas.forEach { tvPreguntas.append("${it.pregunta}\n") }
+    fun createRvListaPreguntas(){
+        rvListaPreguntas.layoutManager = LinearLayoutManager(this)
+        rvListaPreguntas.adapter = adapter
+    }
+
+    fun updateRvListaPreguntas(listaPreguntas: List<Pregunta>) {
+        adapter.updatePreguntas(listaPreguntas)
     }
 
     fun setupAlertDialog() {
