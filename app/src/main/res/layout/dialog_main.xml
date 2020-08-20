@@ -12,7 +12,7 @@
         android:layout_margin="60dp"
         android:ems="10"
         android:inputType="text"
-        android:text="Escribe tu pregunta"
+        android:hint="Escribe tu pregunta..."
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

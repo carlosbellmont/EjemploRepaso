@@ -19,4 +19,11 @@ class MainActivityViewModel : ViewModel() {
             App.getDatabase(context).PreguntaDao().insert(Pregunta(enunciadoPregunta))
         }
     }
+
+    suspend fun deletePregunta(context: Context, pregunta: Pregunta){
+        withContext(Dispatchers.IO){
+            App.getDatabase(context).PreguntaDao().delete(pregunta)
+        }
+    }
+
 }

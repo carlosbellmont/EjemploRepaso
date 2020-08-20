@@ -4,9 +4,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
-class PreguntaAdapter : RecyclerView.Adapter<PreguntaAdapter.PreguntaViewHolder>() {
+class PreguntaAdapter(val mainInterface: MainActivityInterface) : RecyclerView.Adapter<PreguntaAdapter.PreguntaViewHolder>() {
 
     var listaPreguntas: List<Pregunta> = listOf()
 
@@ -25,6 +26,10 @@ class PreguntaAdapter : RecyclerView.Adapter<PreguntaAdapter.PreguntaViewHolder>
 
     override fun onBindViewHolder(holder: PreguntaViewHolder, position: Int) {
         holder.textViewPregunta.text = listaPreguntas[position].pregunta
+        holder.root.setOnClickListener {
+            Toast.makeText(holder.root.context, "Se ha eliminado la pregunta:\n${listaPreguntas[position].pregunta}", Toast.LENGTH_LONG).show()
+            mainInterface.eliminarElemento(listaPreguntas[position])
+        }
     }
 
     fun updatePreguntas(newData: List<Pregunta>) {

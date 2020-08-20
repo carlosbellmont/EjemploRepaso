@@ -15,11 +15,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
-class MainActivity : AppCompatActivity() {
+interface MainActivityInterface {
+    fun eliminarElemento(pregunta: Pregunta)
+}
+class MainActivity : AppCompatActivity(), MainActivityInterface{
 
     private lateinit var model : MainActivityViewModel
-    private val adapter = PreguntaAdapter()
+    private val adapter = PreguntaAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,11 +64,22 @@ class MainActivity : AppCompatActivity() {
             builder.setMessage("Al pulsar guardar, tu pregunta será añadida")
             builder.setView(viewInterna)
 
-            builder.setPositiveButton("Guardar") { dialog, which ->
+            builder.setPositiveButton("Guardar", null)
+
+            builder.setNegativeButton("Cancelar") { dialog, which ->
+                Toast.makeText(
+                    applicationContext,
+                    "Tu pregunta no ha sido guardada",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            val dialog = builder.show()
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 if (edPregunta.text.isNotEmpty()) {
                     CoroutineScope(Dispatchers.IO).launch {
                         model.addPregunta(this@MainActivity, edPregunta.text.toString())
                         mostrarToast("Tu pregunta se ha guardado correctamente")
+                        dialog.dismiss()
                     }
                 } else {
                     // TODO no cerrar el dialogo.
@@ -77,15 +90,6 @@ class MainActivity : AppCompatActivity() {
                     ).show()
                 }
             }
-
-            builder.setNegativeButton("Cancelar") { dialog, which ->
-                Toast.makeText(
-                    applicationContext,
-                    "Tu pregunta no ha sido guardada",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            builder.show()
         }
     }
 
@@ -96,6 +100,12 @@ class MainActivity : AppCompatActivity() {
                 text,
                 Toast.LENGTH_SHORT
             ).show()
+        }
+    }
+
+    override fun eliminarElemento(pregunta: Pregunta) {
+        CoroutineScope(Dispatchers.IO).launch {
+            model.deletePregunta(this@MainActivity,pregunta)
         }
     }
 }
